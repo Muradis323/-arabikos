@@ -1,1 +1,1 @@
-# -arabikos
+# arabikos
