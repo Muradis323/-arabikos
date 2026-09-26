@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#5a3f2b" />
+  <meta name="description" content="Арабикос — тренер арабского языка Корана: слова, глаголы, предлоги, предложения, правила и короткие рассказы." />
+  <title>Арабикос — тренер арабского языка Корана</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="paper-noise" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="brand-wrap">
+      <div class="seal">ع</div>
+      <div>
+        <h1>Арабикос</h1>
+        <p>Арабский Корана, шаг за шагом</p>
+      </div>
+    </div>
+    <div class="progress-box">
+      <div class="progress-row"><span>Прогресс</span><strong id="progressText">0%</strong></div>
+      <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+      <small id="xpText">0 XP · 0 слов изучено</small>
+    </div>
+  </header>
+
+  <main class="book-shell">
+    <aside class="sidebar" aria-label="Разделы">
+      <button class="nav-btn active" data-section="home"><span>⌂</span> Главная</button>
+      <button class="nav-btn" data-section="alphabet"><span>ا</span> Алфавит</button>
+      <button class="nav-btn" data-section="words"><span>ك</span> Слова</button>
+      <button class="nav-btn" data-section="verbs"><span>ف</span> Глаголы</button>
+      <button class="nav-btn" data-section="prepositions"><span>م</span> Предлоги</button>
+      <button class="nav-btn" data-section="sentences"><span>ج</span> Предложения</button>
+      <button class="nav-btn" data-section="rules"><span>ق</span> Правила</button>
+      <button class="nav-btn" data-section="stories"><span>ح</span> Рассказы</button>
+    </aside>
+
+    <section class="page" id="app" aria-live="polite"></section>
+  </main>
+
+  <footer>
+    <span>Арабикос · учебный тренажёр</span>
+    <button id="resetBtn" class="link-btn">Сбросить прогресс</button>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

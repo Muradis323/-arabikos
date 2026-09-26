@@ -1,0 +1,10 @@
+{
+  "name": "Арабикос",
+  "short_name": "Арабикос",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#3d2f24",
+  "theme_color": "#5a3f2b",
+  "lang": "ru",
+  "description": "Тренер арабского языка Корана"
+}
