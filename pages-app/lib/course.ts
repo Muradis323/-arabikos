@@ -26,7 +26,7 @@ const examples:[number[],string][][]=[
 [[[90,5],'Кто это?'],[[91,5],'Что это?'],[[92,0],'Где он?']]
 ];
 export const lessons=raw.map((r,i)=>({id:i,title:r[0],subtitle:r[1],words:words.slice(i*10,i*10+10),examples:examples[i].map(([ids,ru])=>({ids,ru}))}));
-export const intervals=[3600000,10800000,86400000,259200000,604800000,1209600000,2592000000,7776000000,15552000000];
+export const intervals=[3600000,10800000,86400000,259200000,604800000,1296000000,2592000000,7776000000,15552000000];
 export type Progress={completed:number[];lesson:number;step:number;reviews:Record<string,{level:number;due:number;seen:number}>;days:Record<string,number>};
 export const initial:Progress={completed:[],lesson:0,step:0,reviews:{},days:{}};
 export function validateCourse(){for(const l of lessons){if(l.words.length!==10)throw Error('Lesson length');for(const e of l.examples)for(const id of e.ids)if(!words[id]||words[id].lesson>l.id)throw Error('Unlearned word');}return true;}
