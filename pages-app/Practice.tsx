@@ -1,3 +1,4 @@
+import {practiceExamples} from './lib/practice-examples';
 import {useEffect,useRef,useState} from 'react';
 import {lessons,words} from './lib/course';
 import {formsFor,practicedVerbs,type VerbForm} from './lib/verb-forms';
@@ -5,10 +6,10 @@ import {playAnswerSound} from './lib/answer-sound';
 type Props={completed:number[];sound:boolean;onSuccess:()=>void};
 function shuffle<T>(items:T[]){return items.map(v=>({v,k:Math.random()})).sort((a,b)=>a.k-b.k).map(x=>x.v)}
 export function SentencePractice({completed,sound,onSuccess}:Props){
- const examples=lessons.filter(l=>completed.includes(l.id)).slice().reverse().flatMap(l=>l.examples);
+ const examples=practiceExamples(completed);
  const [index,I]=useState(0);
  const example=examples[index];
- return <><div className="eyebrow">ИЗ ИЗУЧЕННЫХ СЛОВ</div><h1>Практика предложений</h1><p className="intro">Прочитайте по-русски и соберите предложение по-арабски. Слова располагаются справа налево. После каждого пройденного урока добавляются 3 предложения; новые идут первыми.</p>{!examples.length?<div className="empty"><h2>Сначала пройдите первый урок</h2><p>Здесь появятся только предложения из полностью пройденных уроков.</p></div>:!example?<div className="empty"><h2>Все предложения собраны!</h2><p>Вы повторили {examples.length} предложений из пройденных уроков.</p><button className="primary" onClick={()=>I(0)}>Практиковаться ещё раз</button></div>:<SentenceRound key={index} example={example} count={index} sound={sound} onSuccess={onSuccess} next={()=>I(i=>i+1)}/>}</>;
+ return <><div className="eyebrow">ИЗ ИЗУЧЕННЫХ СЛОВ</div><h1>Практика предложений</h1><p className="intro">Прочитайте по-русски и соберите предложение по-арабски. Слова располагаются справа налево. Новые предложения появляются по мере прохождения уроков. Все слова и их формы уже знакомы; начинаем с самых новых.</p>{!examples.length?<div className="empty"><h2>Сначала пройдите первый урок</h2><p>Здесь появятся только предложения из полностью пройденных уроков.</p></div>:!example?<div className="empty"><h2>Все предложения собраны!</h2><p>Вы повторили {examples.length} предложений из пройденных уроков.</p><button className="primary" onClick={()=>I(0)}>Практиковаться ещё раз</button></div>:<SentenceRound key={index} example={example} count={index} sound={sound} onSuccess={onSuccess} next={()=>I(i=>i+1)}/>}</>;
 }
 function SentenceRound({example,count,sound,onSuccess,next}:{example:typeof lessons[number]['examples'][number];count:number;sound:boolean;onSuccess:()=>void;next:()=>void}){
  const [selected,S]=useState<number[]>([]),[feedback,F]=useState('');
@@ -36,3 +37,5 @@ function VerbQuestion({form,forms,index,sound,onSuccess,next}:{form:VerbForm;for
  function answer(option:VerbForm){if(busy.current)return;const correct=option.ar===form.ar;if(sound)playAnswerSound(correct);if(!correct){W(option.ar);F(`Это «${option.ru.toLowerCase()}». Попробуйте ещё раз.`);return;}busy.current=true;W('');F('Верно!');onSuccess();timer.current=setTimeout(next,600);}
  return <section className="study-card"><span className="eyebrow">ФОРМА {index+1} / {forms.length}</span><h2 className="practice-prompt">{form.ru}</h2><p>Выберите нужную форму глагола.</p><div className="answers verb-answers">{options.map(f=><button className={'arabic '+(wrong===f.ar?'incorrect':busy.current&&f.ar===form.ar?'correct':'')} lang="ar" dir="rtl" disabled={busy.current} key={f.ar} onClick={()=>answer(f)}>{f.ar}</button>)}</div><p role="status">{feedback||'Учитывайте время и лицо.'}</p></section>;
 }
+
+export function PracticeHub({completed,open}:{completed:number[];open:(view:string)=>void}){return <><div className="eyebrow">ЗАКРЕПЛЯЕМ ИЗУЧЕННОЕ</div><h1>Практика</h1><p className="intro">Выберите, что хотите потренировать.</p><div className="practice-menu"><button className="practice-tile" onClick={()=>open('sentences')}><h2>Предложения</h2><p>Собирайте фразы по-арабски из знакомых слов.</p><small>{practiceExamples(completed).length} предложений</small></button>{completed.includes(7)&&<button className="practice-tile" onClick={()=>open('verbs')}><h2>Глаголы</h2><p>Выбирайте глагол и тренируйте время и лицо.</p><small>{practicedVerbs(completed).length} изученных глаголов</small></button>}</div></>}
