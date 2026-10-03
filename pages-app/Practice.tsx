@@ -17,7 +17,7 @@ function SentenceRound({example,count,sound,onSuccess,next}:{example:typeof less
  return <section className="study-card"><span className="eyebrow">ПРЕДЛОЖЕНИЕ {count+1}</span><h2 className="practice-prompt">{example.ru}</h2><div className="sentence-builder" dir="rtl" lang="ar" aria-label="Ваше предложение">{selected.map((token,i)=><button className="word-token" key={token} disabled={busy.current} onClick={()=>{S(s=>s.filter((_,j)=>j!==i));F('')}}>{words[example.ids[token]].ar}</button>)}{!selected.length&&<span className="muted" lang="ru">Выберите слова ниже</span>}</div><div className="word-bank" dir="rtl" lang="ar">{bank.map(token=><button className="word-token" disabled={selected.includes(token)||busy.current} key={token} onClick={()=>choose(token)}>{words[example.ids[token]].ar}</button>)}</div><p role="status">{feedback||'Проверка происходит автоматически.'}</p><button className="textbtn center" disabled={busy.current} onClick={()=>{S([]);F('')}}>Собрать заново</button></section>;
 }
 export function VerbPractice({completed,sound,onSuccess}:Props){
- const verbs=words.filter(w=>w.lesson===7&&completed.includes(w.lesson));
+ const verbs=words.filter(w=>w.kind==='verb'&&completed.includes(w.lesson));
  const [index,I]=useState(0),[feedback,F]=useState(''),[count,C]=useState(0);const busy=useRef(false),timer=useRef<ReturnType<typeof setTimeout>|null>(null);
  const verb=verbs[index%Math.max(1,verbs.length)];const [options,O]=useState<typeof verbs>([]);
  useEffect(()=>{O(verb?shuffle([verb,...shuffle(verbs.filter(w=>w.id!==verb.id)).slice(0,3)]):[]);F('');busy.current=false;},[index,verb]);
