@@ -1,6 +1,8 @@
+import {validateAlphabet} from './alphabet';
 import {initial,lessons,words,type Progress} from './course';
 export const KEY='arabikos-progress-v2';
 export function validateProgress(p:Progress):boolean {
+ if(p?.alphabet!==undefined&&!validateAlphabet(p.alphabet))return false;
  if(!p||!Array.isArray(p.completed)||!Number.isInteger(p.lesson)||p.lesson<0||p.lesson>=lessons.length||!Number.isInteger(p.step)||p.step<0||p.step>22)return false;
  if(p.completed.length>lessons.length||p.completed.some((v,i)=>v!==i)||p.lesson!==Math.min(p.completed.length,lessons.length-1))return false;
  if(!p.reviews||!p.days||typeof p.reviews!=='object'||typeof p.days!=='object'||Array.isArray(p.reviews)||Array.isArray(p.days))return false;

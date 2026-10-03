@@ -1,3 +1,4 @@
+import {type AlphabetProgress} from './alphabet';
 export const raw = [
 ['Первые смыслы','Местоимения и первые именные предложения','هُوَ|он','هِيَ|она','أَنَا|я','أَنْتَ|ты (муж.)','نَحْنُ|мы','هَٰذَا|это; этот (муж.)','اللَّهُ|Аллах','رَبٌّ|Господь','كِتَابٌ|книга; Писание','حَقٌّ|истина'],
 ['Указания и качества','Учимся узнавать и описывать','ذَٰلِكَ|то; тот (муж.)','هَٰذِهِ|это; эта (жен.)','أَنْتِ|ты (жен.)','هُمْ|они (муж.)','أَنْتُمْ|вы (муж.)','رَسُولٌ|посланник','نَبِيٌّ|пророк','نُورٌ|свет','مُبِينٌ|ясный','كَرِيمٌ|благородный; щедрый'],
@@ -47,7 +48,7 @@ const examples:[number[],string][][]=[
 ];
 export const lessons=raw.map((r,i)=>({id:i,title:r[0],subtitle:r[1],words:words.slice(i*10,i*10+10),examples:examples[i].map(([ids,ru])=>({ids,ru}))}));
 export const intervals=[3600000,10800000,86400000,259200000,604800000,1296000000,2592000000,7776000000,15552000000];
-export type Progress={completed:number[];lesson:number;step:number;reviews:Record<string,{level:number;due:number;seen:number;misses?:number;lastKnown?:boolean}>;days:Record<string,number>};
+export type Progress={alphabet?:AlphabetProgress;completed:number[];lesson:number;step:number;reviews:Record<string,{level:number;due:number;seen:number;misses?:number;lastKnown?:boolean}>;days:Record<string,number>};
 export const initial:Progress={completed:[],lesson:0,step:0,reviews:{},days:{}};
 export function validateCourse(){for(const l of lessons){if(l.words.length!==10)throw Error('Lesson length');for(const e of l.examples)for(const id of e.ids)if(!words[id]||words[id].lesson>l.id)throw Error('Unlearned word');}return true;}
 validateCourse();
