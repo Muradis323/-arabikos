@@ -59,4 +59,4 @@ export function formsFor(id:number):VerbForm[]{
  {ar:'سَ'+presentI,ru:'Я '+future,tense:'Будущее · я'},
  {ar:'سَ'+presentHe,ru:'Он '+futureHe,tense:'Будущее · он'}];
 }
-export const practicedVerbs=(completed:number[])=>words.filter(w=>w.kind==='verb'&&completed.includes(w.lesson)&&formsFor(w.id).length);
+export const practicedVerbs=(completed:number[])=>words.filter(w=>w.kind==='verb'&&completed.includes(w.lesson));

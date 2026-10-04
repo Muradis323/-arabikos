@@ -1,17 +1,11 @@
+import {usePronunciation} from './lib/pronunciation';
 import {useEffect,useRef,useState} from 'react';
 import {Volume2,Check} from 'lucide-react';
 import {letters,positions,shuffle,alphabetQuestion,type AlphabetProgress} from './lib/alphabet';
 import {playAnswerSound} from './lib/answer-sound';
 export function AlphabetWelcome({start,skip}:{start:()=>void;skip:()=>void}){return <section className="empty alphabet-welcome"><span className="arabic giant" lang="ar">أ ب ت</span><h1>Сначала — буквы</h1><p>Вы уже умеете читать по-арабски? Если пока нет, начните с алфавита: изучите буквы, их формы и огласовки.</p><div className="alphabet-tools"><button className="primary" onClick={start}>Изучить алфавит</button><button className="alphabet-secondary" onClick={skip}>Умею читать — скрыть раздел</button></div></section>}
-function usePronunciation(sound:boolean){
- const [available,A]=useState(false),[message,M]=useState('');
- useEffect(()=>{if(!('speechSynthesis' in window))return;const synth=window.speechSynthesis;const update=()=>A(synth.getVoices().some(v=>/^ar(?:-|$)/i.test(v.lang)));update();synth.addEventListener('voiceschanged',update);return()=>{synth.removeEventListener('voiceschanged',update);synth.cancel()}},[]);
- useEffect(()=>{if(!sound&&'speechSynthesis' in window)window.speechSynthesis.cancel()},[sound]);
- function speak(id:number){M('');if(!sound){M('Включите звук вверху страницы, чтобы услышать название буквы.');return}if(!('speechSynthesis' in window)){M('В этом браузере озвучка недоступна.');return}const synth=window.speechSynthesis,voice=synth.getVoices().find(v=>/^ar(?:-|$)/i.test(v.lang));if(!voice){M('На устройстве нет доступного арабского голоса. Можно заниматься по транскрипции.');return}const u=new SpeechSynthesisUtterance(letters[id].speech);u.voice=voice;u.lang=voice.lang;u.rate=.75;u.onerror=e=>{if(e.error!=='canceled'&&e.error!=='interrupted')M('Не удалось воспроизвести звук. Попробуйте ещё раз.')};synth.cancel();synth.speak(u)}
- return {available,message,speak};
-}
-export function Alphabet({progress,sound,onChange,back}:{progress?:AlphabetProgress;sound:boolean;onChange:(p:AlphabetProgress)=>void;back:()=>void}){
- const [testing,T]=useState(false),[round,R]=useState(0),[selected,S]=useState<number|null>(null),[note,N]=useState('');const audio=usePronunciation(sound);
+export function Alphabet({progress,sound,voice='auto',onChange,back}:{progress?:AlphabetProgress;sound:boolean;voice?:string;onChange:(p:AlphabetProgress)=>void;back:()=>void}){
+ const [testing,T]=useState(false),[round,R]=useState(0),[selected,S]=useState<number|null>(null),[note,N]=useState('');const pronunciation=usePronunciation(sound,voice);const audio={...pronunciation,speak:(id:number)=>pronunciation.speak(letters[id].speech)};
  const [order,O]=useState<number[]>([]);const [question,Q]=useState(()=>alphabetQuestion(0));const timer=useRef<ReturnType<typeof setTimeout>|null>(null);const locked=useRef(false);
  useEffect(()=>()=>{if(timer.current)clearTimeout(timer.current)},[]);
  function start(){const ids=shuffle(letters.filter(l=>!progress?.passed.includes(l.id)).map(l=>l.id));const next=ids.length?ids:shuffle(letters.map(l=>l.id));O(next);R(0);Q(alphabetQuestion(next[0]));S(null);N('');locked.current=false;T(true);audio.speak(next[0])}
