@@ -52,7 +52,8 @@ const examples:[number[],string][][]=[
 [[[2,202],'Я — Мурадис.'],[[2,205,21,206],'Я иду домой.'],[[2,208,22,206],'Я работаю дома.']],
 [[[5,210],'Это — завтрак.'],[[2,213,215],'Я ем хлеб.'],[[2,214,216],'Я пью воду.']]
 ];
-export const lessons=raw.map((r,i)=>({id:i,title:r[0],subtitle:r[1],words:words.slice(i*10,i*10+10),examples:examples[i].map(([ids,ru])=>({ids,ru}))}));
+const arabicLessonTitles=['الْمَعَانِي الْأُولَى','الْإِشَارَةُ وَالصِّفَاتُ','الرَّوَابِطُ بَيْنَ الْكَلِمَاتِ','الرَّحْمَةُ وَالْعِلْمُ','الْإِنْسَانُ وَالْإِيمَانُ','الْآيَاتُ وَالْكِتَابُ','الْعَالَمُ مِنْ حَوْلِنَا','الْأَفْعَالُ الْأُولَى','الطَّرِيقُ وَالْجَزَاءُ','الْقِرَاءَةُ بِثِقَةٍ','السَّمْعُ وَالْعَمَلُ','الْإِنْسَانُ مِنَ الدَّاخِلِ','الْحَجْمُ وَالصِّفَاتُ','الْأُسْرَةُ وَالنَّاسُ','الْعِبَادَةُ','الدُّعَاءُ وَالْعَطَاءُ','التَّرْتِيبُ وَالرَّبْطُ','الرِّزْقُ وَالطَّعَامُ','الْحَيَاةُ وَالْأَبَدِيَّةُ','الْعِلْمُ وَالْعَدْلُ','الْبَيْتُ وَالْعَمَلُ','الْفُطُورُ وَالْغَدَاءُ وَالْعَشَاءُ'];
+export const lessons=raw.map((r,i)=>({id:i,title:arabicLessonTitles[i],titleRu:r[0],subtitle:r[1],words:words.slice(i*10,i*10+10),examples:examples[i].map(([ids,ru])=>({ids,ru}))}));
 export const intervals=[3600000,10800000,86400000,259200000,604800000,1296000000,2592000000,7776000000,15552000000];
 export type Progress={alphabet?:AlphabetProgress;completed:number[];lesson:number;step:number;reviews:Record<string,{level:number;due:number;seen:number;misses?:number;lastKnown?:boolean;spellingCleared?:boolean}>;days:Record<string,number>};
 export const initial:Progress={completed:[],lesson:0,step:0,reviews:{},days:{}};
