@@ -1,15 +1,17 @@
 import {practiceExamples,practiceSession} from './lib/practice-examples';
 import {useEffect,useRef,useState} from 'react';
-import {lessons,words} from './lib/course';
+import {lessons,words,lessonLabel} from './lib/course';
 import {formsFor,practicedVerbs,type VerbForm} from './lib/verb-forms';
 import {playAnswerSound} from './lib/answer-sound';
 type Props={completed:number[];sound:boolean;onSuccess:()=>void};
 function shuffle<T>(items:T[]){return items.map(v=>({v,k:Math.random()})).sort((a,b)=>a.k-b.k).map(x=>x.v)}
 export function SentencePractice({completed,sound,onSuccess}:Props){
+ const [selectedLesson,SelectLesson]=useState<number|null>(null),[session,Session]=useState(0);
  const [examples,Examples]=useState(()=>practiceSession(completed));
  const [index,I]=useState(0);
  const example=examples[index];
- return <><div className="eyebrow">ИЗ ИЗУЧЕННЫХ СЛОВ</div><h1>Практика предложений</h1><p className="intro">Прочитайте по-русски и соберите предложение по-арабски. Слова располагаются справа налево. Новые предложения появляются по мере прохождения уроков. Все слова и их формы уже знакомы; начинаем с последних уроков, порядок внутри каждого урока случайный.</p>{!examples.length?<div className="empty"><h2>Сначала пройдите первый урок</h2><p>Здесь появятся только предложения из полностью пройденных уроков.</p></div>:!example?<div className="empty"><h2>Все предложения собраны!</h2><p>Вы повторили {examples.length} предложений из пройденных уроков.</p><button className="primary" onClick={()=>{Examples(practiceSession(completed,examples[0]?.ids.join(',')));I(0)}}>Практиковаться ещё раз</button></div>:<SentenceRound key={index} example={example} count={index} sound={sound} onSuccess={onSuccess} next={()=>I(i=>i+1)}/>}</>;
+ function chooseLesson(id:number|null){SelectLesson(id);Examples(practiceSession(completed,examples[0]?.ids.join(','),id));I(0);Session(n=>n+1)}
+ return <><div className="eyebrow">ИЗ ИЗУЧЕННЫХ СЛОВ</div><h1>Практика предложений</h1><p className="intro">Выберите пройденный урок или практикуйте все предложения. В каждом уроке — фразы с его новыми словами и уже знакомыми словами предыдущих уроков. Порядок случайный.</p>{completed.length>0&&<><div className="sentence-lesson-picker" aria-label="Выбор урока"><button className={selectedLesson===null?'selected arabic':'arabic'} lang="ar" dir="rtl" aria-label="Все уроки" aria-pressed={selectedLesson===null} onClick={()=>chooseLesson(null)}>كُلُّ الدُّرُوسِ</button>{lessons.filter(l=>completed.includes(l.id)).map(l=><button key={l.id} className={selectedLesson===l.id?'selected arabic':'arabic'} lang="ar" dir="rtl" aria-label={'Урок '+(l.id+1)} aria-pressed={selectedLesson===l.id} onClick={()=>chooseLesson(l.id)}>{lessonLabel(l.id)}</button>)}</div><p className="sentence-session-label"><span className="arabic" lang="ar" dir="rtl">{selectedLesson===null?'كُلُّ الدُّرُوسِ':lessonLabel(selectedLesson)}</span> · {examples.length} предложений</p></>}{!examples.length?<div className="empty"><h2>Сначала пройдите первый урок</h2><p>Здесь появятся только предложения из полностью пройденных уроков.</p></div>:!example?<div className="empty"><h2>Все предложения собраны!</h2><p>Вы повторили {examples.length} предложений {selectedLesson===null?'из пройденных уроков':'выбранного урока'}.</p><button className="primary" onClick={()=>chooseLesson(selectedLesson)}>Практиковаться ещё раз</button></div>:<SentenceRound key={session+':'+index} example={example} count={index} sound={sound} onSuccess={onSuccess} next={()=>I(i=>i+1)}/>}</>;
 }
 function SentenceRound({example,count,sound,onSuccess,next}:{example:typeof lessons[number]['examples'][number];count:number;sound:boolean;onSuccess:()=>void;next:()=>void}){
  const [selected,S]=useState<number[]>([]),[feedback,F]=useState('');
