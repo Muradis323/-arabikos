@@ -1,6 +1,5 @@
-import {words} from './course';
+import {words,lessonSentenceBank} from './course';
 export type PracticeExample={ids:number[];ru:string};
-import {lessonSentenceBank} from './sentence-bank';
 export function practiceExamples(completed:number[]):PracticeExample[]{const seen=new Set<string>();return lessonSentenceBank.flat().filter(e=>{if(!e.ids.every(id=>words[id]&&completed.includes(words[id].lesson)))return false;const key=e.ids.join(',');if(seen.has(key))return false;seen.add(key);return true}).sort((a,b)=>Math.max(...b.ids.map(id=>words[id].lesson))-Math.max(...a.ids.map(id=>words[id].lesson)))}
 export function validatePractice(){lessonSentenceBank.forEach((bank,lesson)=>{for(const e of bank)if(!e.ids.length||!e.ru||e.ids.some(id=>!words[id]||words[id].lesson>lesson))throw Error('Invalid practice example')});return true}
 validatePractice();
