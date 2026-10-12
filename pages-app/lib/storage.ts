@@ -12,6 +12,7 @@ export function validateProgress(p:Progress):boolean {
  return Object.entries(p.days).every(([d,n])=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isSafeInteger(n)&&n>=0);
 }
 export function normalizeProgress(data:Progress):Progress {
+ if(data?.completed?.length===5&&data.lesson===4&&data.step===0)data={...data,lesson:5};
  if(!validateProgress(data))throw Error('Сохранённые данные не удалось прочитать. Они не удалены.');return data;
 }
 export function readProgress(storage:Pick<Storage,'getItem'>):Progress {

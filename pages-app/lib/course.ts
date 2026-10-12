@@ -1,3 +1,4 @@
+import {extraLessons} from './madinah-extension';
 import {type AlphabetProgress} from './alphabet';
 export const CURRICULUM='madinah-book1-v1';
 export const courseSource='https://abdurrahman.org/wp-content/uploads/2014/01/madina-book-1-arabic-text-dr-v-abdurrahim.pdf';
@@ -21,10 +22,11 @@ const vocabulary:Entry[][]=[
 ['notebook','دَفْتَرٌ','тетрадь'],['under','تَحْتَ','под','skip'],['there','هُنَاكَ','там','skip'],['whose','لِمَنْ','чей?; кому принадлежит?','skip'],['teacherG','الْمُدَرِّسِ','учителя: зависимое слово','skip'],['studentG','الطَّالِبِ','студента: зависимое слово','skip'],['doctorG','الطَّبِيبِ','врача: зависимое слово','skip'],['manG','الرَّجُلِ','мужчины: зависимое слово','skip'],['bookI','كِتَابُ','книга: первое слово идафы','skip'],['penI','قَلَمُ','ручка: первое слово идафы','skip'],['houseI','بَيْتُ','дом: первое слово идафы','skip'],['deskI','مَكْتَبُ','стол: первое слово идафы','skip'],['notebookI','دَفْتَرُ','тетрадь: первое слово идафы','skip'],['bookIG','كِتَابِ','книги: идафа после предлога','skip'],['deskIG','مَكْتَبِ','стола: идафа после предлога','skip'],['houseIG','بَيْتِ','дома: идафа после предлога','skip']
 ]
 ];
+vocabulary.push(...extraLessons.map(l=>l.words));
 export const words:Word[]=[];vocabulary.forEach((entries,lesson)=>entries.forEach(([key,ar,ru,kind])=>words.push({id:words.length,key,ar,ru,lesson,...(kind==='verb'?{kind:'verb' as const}:{}),quiz:kind!=='skip'})));
 export const wordId=(key:string)=>{const w=words.find(w=>w.key===key);if(!w)throw Error('Unknown course word '+key);return w.id};
 const sentence=(keys:string[],ru:string):Sentence=>({ids:keys.map(wordId),ru});
-export const lessonSentenceBank:Sentence[][]=[[],[],[],[],[]];
+export const lessonSentenceBank:Sentence[][]=Array.from({length:vocabulary.length},()=>[]);
 const add=(lesson:number,keys:string[],ru:string)=>lessonSentenceBank[lesson].push(sentence(keys,ru));
 for(const key of ['pen','book','key','chair','bed','shirt','star','door','mosque','desk','boy','man','teacher','student','doctor','cat','dog','camel','donkey','horse','rooster']){const w=words[wordId(key)];add(0,['this',key],'Это — '+w.ru+'.');}
 for(const key of ['book','key','chair','desk','mosque']){add(0,['what','this'],'Что это?');break}
@@ -45,10 +47,14 @@ const rules=[
 [{title:'Идафа — связь двух существительных',text:'Первое слово не имеет ни «аль», ни танвина. Второе стоит с касрой: كِتَابُ الْمُدَرِّسِ — «книга учителя». После предлога касра появляется и у первого слова: عَلَىٰ مَكْتَبِ الْمُدَرِّسِ.',ar:'قَلَمُ الطَّالِبِ',ru:'Ручка студента.'},{title:'Чей, где и под чем',text:'لِمَنْ — «чей? / кому принадлежит?», هُنَاكَ — «там», تَحْتَ — «под». После تَحْتَ также используем зависимое существительное с касрой.',ar:'الْقَلَمُ تَحْتَ الْمَكْتَبِ',ru:'Ручка под столом.'}]
 ];
 const quizKeys=[['house','pen','book','key','chair','bed','shirt'],['imam','stone','sugar','milk','that','and','teacher'],['large','new','theHouse','theBook','open','clean','broken'],['go','out','classroom','school','where','on','in'],['notebook','bookI','penI','teacherG','studentG','under','whose']];
+extraLessons.forEach((l,i)=>{titles.push(l.title);titlesRu.push(l.titleRu);rules.push([l.rule]);quizKeys.push(l.words.slice(0,7).map(w=>w[0]));for(const [keys,ru] of l.sentences)add(i+5,keys,ru);
+ const pairs=[[0,1],[2,3],[4,5],[6,7],[0,6],[2,8],[1,9]];for(const [a,b] of pairs){const first=l.sentences[a],second=l.sentences[b];if(!first[1].includes('?')&&!second[1].includes('?')){const lower=second[1].charAt(0).toLowerCase()+second[1].slice(1);add(i+5,[...first[0],'and',...second[0]],first[1].replace(/\.$/,'')+', и '+lower);}}
+ if(i>=7){const parts=[l.sentences[0],l.sentences[2],l.sentences[4]];add(i+5,[...parts[0][0],'and',...parts[1][0],'and',...parts[2][0]],parts.map((p,j)=>j?p[1].charAt(0).toLowerCase()+p[1].slice(1).replace(/\.$/,''):p[1].replace(/\.$/,'')).join(', и ')+'.');}
+});
 export const lessons=vocabulary.map((_,id)=>({id,title:titles[id],titleRu:titlesRu[id],subtitle:'Мединский курс · том 1 · урок '+(id+1),words:words.filter(w=>w.lesson===id),examples:lessonSentenceBank[id].slice(id<2?2:0,id<2?5:3),rules:rules[id],quizIds:quizKeys[id].map(wordId)}));
 export const arabicText=(ids:number[])=>ids.map(id=>words[id].ar).join(' ').replace(/أَ /g,'أَ').replace(/وَ /g,'وَ');
 export const lessonSteps=(id:number)=>lessons[id].words.length+3+10;
-export const lessonLabel=(id:number)=>'الدَّرْسُ '+['الْأَوَّلُ','الثَّانِي','الثَّالِثُ','الرَّابِعُ','الْخَامِسُ'][id];
+export const lessonLabel=(id:number)=>'الدَّرْسُ '+['الْأَوَّلُ','الثَّانِي','الثَّالِثُ','الرَّابِعُ','الْخَامِسُ','السَّادِسُ','السَّابِعُ','الثَّامِنُ','التَّاسِعُ','الْعَاشِرُ','الْحَادِي عَشَرَ','الثَّانِي عَشَرَ','الثَّالِثُ عَشَرَ','الرَّابِعُ عَشَرَ','الْخَامِسُ عَشَرَ','السَّادِسُ عَشَرَ','السَّابِعُ عَشَرَ','الثَّامِنُ عَشَرَ','التَّاسِعُ عَشَرَ','الْعِشْرُونَ'][id];
 export const intervals=[3600000,10800000,86400000,259200000,604800000,1296000000,2592000000,7776000000,15552000000];
 export type Progress={lessonResults?:Record<string,{best:number;last:number;runs:number}>;alphabet?:AlphabetProgress;completed:number[];lesson:number;step:number;reviews:Record<string,{level:number;due:number;seen:number;misses?:number;lastKnown?:boolean;spellingCleared?:boolean}>;days:Record<string,number>};
 export const initial:Progress={completed:[],lesson:0,step:0,reviews:{},days:{}};
