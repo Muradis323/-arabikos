@@ -53,10 +53,11 @@ extraLessons.forEach((l,i)=>{titles.push(l.title);titlesRu.push(l.titleRu);rules
 });
 export const lessons=vocabulary.map((_,id)=>({id,title:titles[id],titleRu:titlesRu[id],subtitle:'Мединский курс · том 1 · урок '+(id+1),words:words.filter(w=>w.lesson===id),examples:lessonSentenceBank[id].slice(id<2?2:0,id<2?5:3),rules:rules[id],quizIds:quizKeys[id].map(wordId)}));
 export const arabicText=(ids:number[])=>ids.map(id=>words[id].ar).join(' ').replace(/أَ /g,'أَ').replace(/وَ /g,'وَ');
-export const lessonSteps=(id:number)=>lessons[id].words.length+3+10;
+export const lessonTestCount=24;
+export const lessonSteps=(id:number)=>lessons[id].words.length+3+lessonTestCount;
 export const lessonLabel=(id:number)=>'الدَّرْسُ '+['الْأَوَّلُ','الثَّانِي','الثَّالِثُ','الرَّابِعُ','الْخَامِسُ','السَّادِسُ','السَّابِعُ','الثَّامِنُ','التَّاسِعُ','الْعَاشِرُ','الْحَادِي عَشَرَ','الثَّانِي عَشَرَ','الثَّالِثُ عَشَرَ','الرَّابِعُ عَشَرَ','الْخَامِسُ عَشَرَ','السَّادِسُ عَشَرَ','السَّابِعُ عَشَرَ','الثَّامِنُ عَشَرَ','التَّاسِعُ عَشَرَ','الْعِشْرُونَ'][id];
 export const intervals=[3600000,10800000,86400000,259200000,604800000,1296000000,2592000000,7776000000,15552000000];
-export type Progress={lessonResults?:Record<string,{best:number;last:number;runs:number}>;alphabet?:AlphabetProgress;completed:number[];lesson:number;step:number;reviews:Record<string,{level:number;due:number;seen:number;misses?:number;lastKnown?:boolean;spellingCleared?:boolean}>;days:Record<string,number>};
+export type Progress={mastered?:number[];lessonResults?:Record<string,{best:number;last:number;runs:number}>;alphabet?:AlphabetProgress;completed:number[];lesson:number;step:number;reviews:Record<string,{level:number;due:number;seen:number;misses?:number;lastKnown?:boolean;spellingCleared?:boolean}>;days:Record<string,number>};
 export const initial:Progress={completed:[],lesson:0,step:0,reviews:{},days:{}};
 export function validateCourse(){for(const l of lessons){if(l.examples.length!==3)throw Error('Missing examples');for(const e of lessonSentenceBank[l.id])if(!e.ids.length||e.ids.some(id=>!words[id]||words[id].lesson>l.id))throw Error('Unlearned word');}return true;}
 validateCourse();
@@ -67,3 +68,6 @@ const unmarked=(ar:string)=>ar.normalize('NFC').replace(/[\u064B-\u065F\u0670\u0
 const articleBase=new Map<number,number>();
 for(const w of words){const ar=unmarked(w.ar);if(ar.startsWith('ال')){const base=words.find(v=>v.id<w.id&&!unmarked(v.ar).startsWith('ال')&&unmarked(v.ar)===ar.slice(2));if(base)articleBase.set(w.id,base.id);}}
 export function learnedDictionaryWords(p:Progress){return words.filter(w=>isWordLearned(p,w.id)&&(!articleBase.has(w.id)||!isWordLearned(p,articleBase.get(w.id)!)));}
+
+export function setWordMastered(p:Progress,id:number,mastered:boolean):Progress{if(!isWordLearned(p,id))return p;const ids=new Set(p.mastered??[]);if(mastered)ids.add(id);else ids.delete(id);return {...p,mastered:[...ids]};}
+export function reviewWords(p:Progress){return learnedDictionaryWords(p).filter(w=>!p.mastered?.includes(w.id));}
