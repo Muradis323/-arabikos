@@ -54,3 +54,5 @@ export type Progress={lessonResults?:Record<string,{best:number;last:number;runs
 export const initial:Progress={completed:[],lesson:0,step:0,reviews:{},days:{}};
 export function validateCourse(){for(const l of lessons){if(l.examples.length!==3)throw Error('Missing examples');for(const e of lessonSentenceBank[l.id])if(!e.ids.length||e.ids.some(id=>!words[id]||words[id].lesson>l.id))throw Error('Unlearned word');}return true;}
 validateCourse();
+
+export function isWordLearned(p:Progress,id:number){const w=words[id];return !!w&&(p.completed.includes(w.lesson)||(w.lesson===p.lesson&&lessons[p.lesson].words.findIndex(v=>v.id===id)<Math.min(p.step,lessons[p.lesson].words.length)));}
