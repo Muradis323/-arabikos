@@ -1,8 +1,5 @@
-// Retire the old cache-first Arabikos v1 worker without touching localStorage.
-self.addEventListener('install',()=>self.skipWaiting());
-self.addEventListener('activate',event=>event.waitUntil((async()=>{
- await caches.delete('arabikos-v1');
- await self.registration.unregister();
- const tabs=await self.clients.matchAll({type:'window',includeUncontrolled:true});
- for(const tab of tabs)if(tab.url.startsWith(self.registration.scope))await tab.navigate(tab.url);
-})()));
+const CACHE='arabikos-app-a843e1b93b83';const FILES=["./","./index.html","./favicon.svg","./apple-touch-icon.png","./manifest.webmanifest","./assets/index-Dzu8UZk9.js","./assets/index-Tllt7CV4.css"];
+self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);await cache.addAll(FILES);if(!self.registration.active)await self.skipWaiting();})()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if((key.startsWith('arabikos-app-')||key==='arabikos-v1')&&key!==CACHE)await caches.delete(key);await self.clients.claim();})()));
+self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')event.waitUntil(self.skipWaiting());});
+self.addEventListener('fetch',event=>{const request=event.request,url=new URL(request.url);if(request.method!=='GET')return;if(url.origin===self.location.origin){if(!url.pathname.startsWith(new URL(self.registration.scope).pathname))return;event.respondWith((async()=>{const cache=await caches.open(CACHE);if(request.mode==='navigate'){return await cache.match('./index.html')||fetch(request)}const stored=await cache.match(request);if(stored)return stored;const response=await fetch(request);if(response.ok)await cache.put(request,response.clone());return response})());}else if(['fonts.googleapis.com','fonts.gstatic.com'].includes(url.hostname)){event.respondWith((async()=>{const cache=await caches.open(CACHE),stored=await cache.match(request);if(stored)return stored;const response=await fetch(request);if(response.ok)await cache.put(request,response.clone());return response})());}});
