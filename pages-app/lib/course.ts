@@ -62,3 +62,8 @@ export function validateCourse(){for(const l of lessons){if(l.examples.length!==
 validateCourse();
 
 export function isWordLearned(p:Progress,id:number){const w=words[id];return !!w&&(p.completed.includes(w.lesson)||(w.lesson===p.lesson&&lessons[p.lesson].words.findIndex(v=>v.id===id)<Math.min(p.step,lessons[p.lesson].words.length)));}
+// Article and case markings belong in lesson exercises, not extra vocabulary cards.
+const unmarked=(ar:string)=>ar.normalize('NFC').replace(/[\u064B-\u065F\u0670\u0640]/g,'');
+const articleBase=new Map<number,number>();
+for(const w of words){const ar=unmarked(w.ar);if(ar.startsWith('ال')){const base=words.find(v=>v.id<w.id&&!unmarked(v.ar).startsWith('ال')&&unmarked(v.ar)===ar.slice(2));if(base)articleBase.set(w.id,base.id);}}
+export function learnedDictionaryWords(p:Progress){return words.filter(w=>isWordLearned(p,w.id)&&(!articleBase.has(w.id)||!isWordLearned(p,articleBase.get(w.id)!)));}

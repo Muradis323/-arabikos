@@ -1,5 +1,5 @@
-import {words,isWordLearned,type Progress} from './course';
-export function dictionaryWords(p:Progress,now:number){return words.filter(w=>isWordLearned(p,w.id)).sort((a,b)=>{
+import {learnedDictionaryWords,type Progress} from './course';
+export function dictionaryWords(p:Progress,now:number){return learnedDictionaryWords(p).sort((a,b)=>{
  const da=p.reviews[a.id]?.due??0,db=p.reviews[b.id]?.due??0;
  const pendingA=da<=now,pendingB=db<=now;
  if(pendingA!==pendingB)return pendingA?-1:1;
