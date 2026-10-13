@@ -1,8 +1,10 @@
+import {validateProtection} from './streak';
 import {validateAlphabet} from './alphabet';
 import {initial,lessons,words,lessonSteps,isWordLearned,type Progress} from './course';
 export const LEGACY_KEY='arabikos-progress-v2';
 export const KEY='arabikos-madinah-v1';
 export function validateProgress(p:Progress):boolean {
+ if(p?.streakProtection!==undefined&&!validateProtection(p.streakProtection))return false;
  if(p?.lessonResults!==undefined){if(!p.lessonResults||typeof p.lessonResults!=='object'||Array.isArray(p.lessonResults))return false;for(const [id,r] of Object.entries(p.lessonResults))if(!/^\d{1,2}$/.test(id)||!p.completed?.includes(Number(id))||!r||!Number.isInteger(r.best)||r.best<0||r.best>100||!Number.isInteger(r.last)||r.last<0||r.last>r.best||!Number.isSafeInteger(r.runs)||r.runs<1)return false;}
  if(p?.alphabet!==undefined&&!validateAlphabet(p.alphabet))return false;
  if(!p||!Array.isArray(p.completed)||!Number.isInteger(p.lesson)||p.lesson<0||p.lesson>=lessons.length||!Number.isInteger(p.step)||p.step<0||p.step>=lessonSteps(p.lesson))return false;

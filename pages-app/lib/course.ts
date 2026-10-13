@@ -57,7 +57,8 @@ export const lessonTestCount=24;
 export const lessonSteps=(id:number)=>lessons[id].words.length+3+lessonTestCount;
 export const lessonLabel=(id:number)=>'الدَّرْسُ '+['الْأَوَّلُ','الثَّانِي','الثَّالِثُ','الرَّابِعُ','الْخَامِسُ','السَّادِسُ','السَّابِعُ','الثَّامِنُ','التَّاسِعُ','الْعَاشِرُ','الْحَادِي عَشَرَ','الثَّانِي عَشَرَ','الثَّالِثُ عَشَرَ','الرَّابِعُ عَشَرَ','الْخَامِسُ عَشَرَ','السَّادِسُ عَشَرَ','السَّابِعُ عَشَرَ','الثَّامِنُ عَشَرَ','التَّاسِعُ عَشَرَ','الْعِشْرُونَ'][id];
 export const intervals=[3600000,10800000,86400000,259200000,604800000,1296000000,2592000000,7776000000,15552000000];
-export type Progress={mastered?:number[];lessonResults?:Record<string,{best:number;last:number;runs:number}>;alphabet?:AlphabetProgress;completed:number[];lesson:number;step:number;reviews:Record<string,{level:number;due:number;seen:number;misses?:number;lastKnown?:boolean;spellingCleared?:boolean}>;days:Record<string,number>};
+export type StreakProtection={credits:number;enabled:boolean;lastChecked:string;frozenDays:string[]};
+export type Progress={streakProtection?:StreakProtection;mastered?:number[];lessonResults?:Record<string,{best:number;last:number;runs:number}>;alphabet?:AlphabetProgress;completed:number[];lesson:number;step:number;reviews:Record<string,{level:number;due:number;seen:number;misses?:number;lastKnown?:boolean;spellingCleared?:boolean}>;days:Record<string,number>};
 export const initial:Progress={completed:[],lesson:0,step:0,reviews:{},days:{}};
 export function validateCourse(){for(const l of lessons){if(l.examples.length!==3)throw Error('Missing examples');for(const e of lessonSentenceBank[l.id])if(!e.ids.length||e.ids.some(id=>!words[id]||words[id].lesson>l.id))throw Error('Unlearned word');}return true;}
 validateCourse();
