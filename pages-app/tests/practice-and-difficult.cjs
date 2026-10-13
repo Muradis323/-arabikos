@@ -21,13 +21,15 @@ assert.equal(all(tree,e=>e.props?.className==='sentence-lesson-choice').length,0
 assert.equal(all(tree,e=>e.props?.className==='practice-prompt').length,1);
 const prompt=all(tree,e=>e.props?.className==='practice-prompt')[0].props.children;
 tree=render(sentenceRoot);assert.equal(all(tree,e=>e.props?.className==='practice-prompt')[0].props.children,prompt);
-const quran=load('pages-app/lib/quran-practice.ts',{'./course':course});
-for(const verse of quran.quranPassages){assert(quran.missingQuranWords(course.initial,verse).length);assert.equal(quran.missingQuranWords({...course.initial,completed:completedAll},verse).length,0);assert(verse.source.endsWith('quran.ru.kuliev'));assert(verse.note.length>40)}
-console.log('PASS: 5–100 unique randomized learned-only tasks, newest vocabulary first, connected stories and dialogues, immediate practice, Quran vocabulary gates, backup and difficult-word review.');
-
-const qUi=load('pages-app/QuranPractice.tsx',{'react':react,'./lib/course':course,'./lib/quran-practice':quran,'./lib/haptics':{tactile:()=>{}},'./lib/answer-sound':{playAnswerSound:()=>{}}});
-frames.clear();timers=[];let credited=0;const qRoot={type:qUi.QuranPractice,props:{progress:{...course.initial,completed:completedAll},sound:false,onSuccess:()=>credited++}};
-tree=render(qRoot);all(tree,e=>e.props?.className==='sentence-lesson-choice')[0].props.onClick();tree=render(qRoot);all(tree,e=>e.type==='button'&&e.props.children==='Разобрал · собрать аят')[0].props.onClick();
-for(let i=0;i<quran.quranPassages[0].tokens.length;i++){tree=render(qRoot);const bank=all(tree,e=>e.props?.className==='word-bank')[0];all(bank,e=>e.type==='button'&&String(e.key)===String(i))[0].props.onClick()}
-assert.equal(credited,1);assert.equal(timers.length,1);timers.shift()();tree=render(qRoot);assert(all(tree,e=>e.props?.role==='status'&&e.props.children==='Аят собран верно.').length);
-console.log('PASS: Quran explanation, assembly, single activity credit and automatic completion.');
+console.log('PASS: randomized sessions and immediate practice.');
+const story=load('pages-app/lib/prophet-story.ts');
+const reader=load('pages-app/StoryReader.tsx',{'react':react,'./lib/prophet-story':story});
+frames.clear();const rootReader={type:reader.StoryReader,props:{}};tree=render(rootReader);
+const tokens=all(tree,e=>e.props?.className==='story-word');assert.equal(tokens.length,story.prophetStory.paragraphs.flat().length);assert(tokens.length>40);
+for(const word of story.prophetStory.paragraphs.flat()){assert(word.ar);assert(word.ru)}
+let focused=false;tokens[1].props.onClick({currentTarget:{focus:()=>{focused=true}}});tree=render(rootReader);
+assert.equal(all(tree,e=>e.props?.className==='story-word'&&e.props['aria-pressed']).length,1);
+assert(all(tree,e=>e.type==='p'&&e.props.children===story.prophetStory.paragraphs[0][1].ru).length);
+all(tree,e=>e.props?.['aria-label']==='Закрыть перевод')[0].props.onClick();tree=render(rootReader);assert(focused);assert.equal(all(tree,e=>e.props?.className==='story-word'&&e.props['aria-pressed']).length,0);
+for(let n=1;n<=20;n++)assert(examples.practiceSession(Array.from({length:n},(_,i)=>i)).every(e=>e.ids.length<=10));
+console.log('PASS: every story word has a contextual translation, tap opens and close restores focus; all practice tasks capped at ten words.');

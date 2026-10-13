@@ -6,7 +6,7 @@ validatePractice();
 
 function shuffle<T>(items:T[]):T[]{const result=[...items];for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]]}return result}
 export function practiceSession(completed:number[],previousFirst?:string,selectedLesson:number|null=null):PracticeExample[]{
- const pool=practiceExamples(completed);
+ const pool=practiceExamples(completed).filter(e=>e.ids.length<=10);
  if(selectedLesson!==null)return shuffle(pool.filter(e=>Math.max(...e.ids.map(id=>words[id].lesson))===selectedLesson));
  const count=new Set(completed.filter(id=>Number.isInteger(id)&&id>=0&&id<lessonSentenceBank.length)).size*5;
  if(!count)return [];
