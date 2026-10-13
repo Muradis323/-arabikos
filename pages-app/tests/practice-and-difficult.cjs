@@ -24,3 +24,10 @@ tree=render(sentenceRoot);assert.equal(all(tree,e=>e.props?.className==='practic
 const quran=load('pages-app/lib/quran-practice.ts',{'./course':course});
 for(const verse of quran.quranPassages){assert(quran.missingQuranWords(course.initial,verse).length);assert.equal(quran.missingQuranWords({...course.initial,completed:completedAll},verse).length,0);assert(verse.source.endsWith('quran.ru.kuliev'));assert(verse.note.length>40)}
 console.log('PASS: 5–100 unique randomized learned-only tasks, newest vocabulary first, connected stories and dialogues, immediate practice, Quran vocabulary gates, backup and difficult-word review.');
+
+const qUi=load('pages-app/QuranPractice.tsx',{'react':react,'./lib/course':course,'./lib/quran-practice':quran,'./lib/haptics':{tactile:()=>{}},'./lib/answer-sound':{playAnswerSound:()=>{}}});
+frames.clear();timers=[];let credited=0;const qRoot={type:qUi.QuranPractice,props:{progress:{...course.initial,completed:completedAll},sound:false,onSuccess:()=>credited++}};
+tree=render(qRoot);all(tree,e=>e.props?.className==='sentence-lesson-choice')[0].props.onClick();tree=render(qRoot);all(tree,e=>e.type==='button'&&e.props.children==='Разобрал · собрать аят')[0].props.onClick();
+for(let i=0;i<quran.quranPassages[0].tokens.length;i++){tree=render(qRoot);const bank=all(tree,e=>e.props?.className==='word-bank')[0];all(bank,e=>e.type==='button'&&String(e.key)===String(i))[0].props.onClick()}
+assert.equal(credited,1);assert.equal(timers.length,1);timers.shift()();tree=render(qRoot);assert(all(tree,e=>e.props?.role==='status'&&e.props.children==='Аят собран верно.').length);
+console.log('PASS: Quran explanation, assembly, single activity credit and automatic completion.');
