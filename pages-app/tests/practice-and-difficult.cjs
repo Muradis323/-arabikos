@@ -7,7 +7,7 @@ const course=load('pages-app/lib/course.ts');const spelling=load('pages-app/lib/
 assert.equal(course.lessons.length,20);assert.equal(course.words.length,297);for(let i=0;i<=20;i++){const completed=Array.from({length:i},(_,j)=>j);const available=examples.practiceExamples(completed);assert(available.every(e=>e.ids.every(id=>completed.includes(course.words[id].lesson))));if(i)assert(available.length>examples.practiceExamples(completed.slice(0,-1)).length);assert.equal(new Set(available.map(e=>e.ids.join(','))).size,available.length)}const allExamples=examples.practiceExamples(Array.from({length:20},(_,i)=>i));assert(allExamples.length>350);assert(forms.practicedVerbs(Array.from({length:20},(_,i)=>i)).length>0);
 let p={...course.initial,completed:[0],lesson:1,reviews:{0:{level:1,due:1234,seen:2,lastKnown:false,misses:1}}};assert.equal(spelling.weakWords(p).length,1);p=spelling.clearDifficultWord(p,0,false);assert.equal(spelling.weakWords(p).length,1);p=spelling.clearDifficultWord(p,0,true);assert.equal(spelling.weakWords(p).length,0);assert.equal(p.reviews[0].due,1234);assert(backup.parseBackup(backup.makeBackup(p)).reviews[0].spellingCleared);assert.equal(repetition.scheduleReview(p.reviews[0],true,1000).spellingCleared,true);p={...p,reviews:{0:repetition.scheduleReview(p.reviews[0],false,1000)}};assert.equal(spelling.weakWords(p).length,1);
 function solve(hint){frames.clear();timers=[];let result;const root={type:builder.WordBuilder,props:{ids:[0],sound:false,onSuccess:(id,noHint)=>{result={id,noHint}},back:()=>{}}};let tree=render(root);if(hint){all(tree,e=>e.type==='button'&&e.props.children==='Показать слово')[0].props.onClick();tree=render(root);all(tree,e=>e.type==='button'&&e.props.children==='Скрыть подсказку')[0].props.onClick()}for(let i=0;i<spelling.spellingTokens(course.words[0].ar).length;i++){tree=render(root);const bank=all(tree,e=>e.props?.className==='word-bank letter-bank')[0];all(bank,e=>e.type==='button'&&String(e.key)===String(i))[0].props.onClick()}assert.equal(result.id,0);assert.equal(result.noHint,!hint);assert.equal(timers.length,1);timers.shift()();tree=render(root);assert(!all(tree,e=>e.type==='button'&&e.props.children==='Повторить сборку').length)}solve(false);solve(true);
-frames.clear();const hub={type:practice.PracticeHub,props:{completed:[0],open:()=>{}}};let tree=render(hub);assert.equal(all(tree,e=>e.props?.className==='practice-tile').length,3);hub.props.completed=Array.from({length:8},(_,i)=>i);tree=render(hub);assert.equal(all(tree,e=>e.props?.className==='practice-tile').length,3);
+frames.clear();const hub={type:practice.PracticeHub,props:{completed:[0],open:()=>{}}};let tree=render(hub);assert.equal(all(tree,e=>e.props?.className==='practice-tile').length,4);hub.props.completed=Array.from({length:8},(_,i)=>i);tree=render(hub);assert.equal(all(tree,e=>e.props?.className==='practice-tile').length,4);
 const completedAll=Array.from({length:20},(_,i)=>i),orders=new Set();
 for(let level=1;level<=20;level++)for(let n=0;n<5;n++){
  const completed=completedAll.slice(0,level),session=examples.practiceSession(completed);
@@ -23,7 +23,7 @@ const prompt=all(tree,e=>e.props?.className==='practice-prompt')[0].props.childr
 tree=render(sentenceRoot);assert.equal(all(tree,e=>e.props?.className==='practice-prompt')[0].props.children,prompt);
 console.log('PASS: randomized sessions and immediate practice.');
 const story=load('pages-app/lib/prophet-story.ts');
-const reader=load('pages-app/StoryReader.tsx',{'react':react,'./lib/prophet-story':story});
+const reader=load('pages-app/StoryReader.tsx',{'react':react,'./lib/prophet-story':story,'./lib/pronunciation':{usePronunciation:()=>({speak:()=>{},message:''})}});
 frames.clear();const rootReader={type:reader.StoryReader,props:{}};tree=render(rootReader);
 const tokens=all(tree,e=>e.props?.className==='story-word');assert.equal(tokens.length,story.prophetStory.paragraphs.flat().length);assert(tokens.length>40);
 for(const word of story.prophetStory.paragraphs.flat()){assert(word.ar);assert(word.ru)}
@@ -31,5 +31,5 @@ let focused=false;tokens[1].props.onClick({currentTarget:{focus:()=>{focused=tru
 assert.equal(all(tree,e=>e.props?.className==='story-word'&&e.props['aria-pressed']).length,1);
 assert(all(tree,e=>e.type==='p'&&e.props.children===story.prophetStory.paragraphs[0][1].ru).length);
 all(tree,e=>e.props?.['aria-label']==='Закрыть перевод')[0].props.onClick();tree=render(rootReader);assert(focused);assert.equal(all(tree,e=>e.props?.className==='story-word'&&e.props['aria-pressed']).length,0);
-for(let n=1;n<=20;n++)assert(examples.practiceSession(Array.from({length:n},(_,i)=>i)).every(e=>e.ids.length<=10));
+for(let n=1;n<=20;n++)assert(examples.practiceSession(Array.from({length:n},(_,i)=>i)).every(e=>e.parts?e.parts.every(p=>p.ids.length<=10):e.ids.length<=10));
 console.log('PASS: every story word has a contextual translation, tap opens and close restores focus; all practice tasks capped at ten words.');

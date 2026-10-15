@@ -22,3 +22,12 @@
 
 Сборка из корня: node node_modules/vite/bin/vite.js build --config pages-app/vite.config.ts.
 Проверки: madinah-course.cjs, path-and-lesson-ui.cjs, alphabet.cjs, offline-worker.cjs (после сборки). Проверка интерфейса моделирует React hooks; реальный iPhone не использовался. Содержимое pages-dist публикуется в корень репозитория на GitHub Pages.
+
+
+## Learning update, 2026-10-15
+- Forgotten cards return after three others, with a five-minute due date if the session is closed.
+- Optional progress fields preserve per-lesson attempts, errors, daily goals, sentence sessions and reading cards. Existing numeric course word IDs and storage key remain unchanged.
+- Backup v3 includes the extended state; import still accepts v2. Prior clients reject v3 instead of dropping new fields silently. Three local daily snapshots supplement downloadable backups; neither is cloud sync.
+- Short lesson checkpoints, connected sentence segments, listening practice using device TTS, contextual dictionary reference and user-selected story cards.
+- Freeze awards limited to once per local calendar day.
+- Human-reviewed recordings, editorial review, server sync and web push are not implemented.

@@ -7,6 +7,7 @@ export function finishLesson(p:Progress,id:number,score:number,now=new Date()):P
  if(!replay)for(const w of words.filter(w=>w.lesson===id))if(!reviews[w.id])reviews[w.id]={level:0,due:now.getTime(),seen:0};
  const old=p.lessonResults?.[id],day=dayKey(now);
  const result={...p,completed,reviews,...(!replay?{lesson:Math.min(completed.length,lessons.length-1),step:0}:{}),lessonResults:{...p.lessonResults,[id]:{best:Math.max(old?.best??0,score),last:score,runs:(old?.runs??0)+1}},days:{...p.days,[day]:(p.days[day]??0)+1}};
+ if(result.attempt?.id===id)delete result.attempt;if(result.attempts){result.attempts=Object.fromEntries(Object.entries(result.attempts).filter(([key])=>Number(key)!==id));if(!Object.keys(result.attempts).length)delete result.attempts;}
  return score===100?awardFreeze(result,now):result;
 }
 export const totalPoints=(p:Progress)=>Object.values(p.lessonResults??{}).reduce((sum,r)=>sum+r.best,0);

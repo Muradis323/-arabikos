@@ -1,12 +1,12 @@
 import {words,wordId,lessonSentenceBank} from './course';
-export type PracticeExample={ids:number[];ru:string;kind?:string};
+export type PracticeExample={ids:number[];ru:string;kind?:string;parts?:{ids:number[];ru:string}[]};
 export function practiceExamples(completed:number[]):PracticeExample[]{const seen=new Set<string>();return [...lessonSentenceBank.flat(),...connectedExamples].filter(e=>{if(!e.ids.every(id=>words[id]&&completed.includes(words[id].lesson)))return false;const key=e.ids.join(',');if(seen.has(key))return false;seen.add(key);return true}).sort((a,b)=>Math.max(...b.ids.map(id=>words[id].lesson))-Math.max(...a.ids.map(id=>words[id].lesson)))}
 export function validatePractice(){lessonSentenceBank.forEach((bank,lesson)=>{for(const e of bank)if(!e.ids.length||!e.ru||e.ids.some(id=>!words[id]||words[id].lesson>lesson))throw Error('Invalid practice example')});return true}
 validatePractice();
 
 function shuffle<T>(items:T[]):T[]{const result=[...items];for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]]}return result}
 export function practiceSession(completed:number[],previousFirst?:string,selectedLesson:number|null=null):PracticeExample[]{
- const pool=practiceExamples(completed).filter(e=>e.ids.length<=10);
+ const pool=practiceExamples(completed).filter(e=>e.ids.length<=10||e.parts?.every(p=>p.ids.length<=10));
  if(selectedLesson!==null)return shuffle(pool.filter(e=>Math.max(...e.ids.map(id=>words[id].lesson))===selectedLesson));
  const count=new Set(completed.filter(id=>Number.isInteger(id)&&id>=0&&id<lessonSentenceBank.length)).size*5;
  if(!count)return [];
@@ -46,3 +46,13 @@ connected('Мини-рассказ',['these','doctorsPl','theyM','outMpl','from'
 connected('Диалог',['howMany','brotherAcc','toYouM','toMe','brothersTwo','myBrothers','studentsPl'],'— Сколько у тебя братьев?\n— У меня два брата. Мои братья — студенты.');
 connected('Мини-рассказ',['in','classroomG','threeM','studentsPlG','theStudentsPl','hardworkingPl','theBooksPl','on','deskG','theBooksPl','newF'],'В классе три студента. Студенты прилежные. Книги на столе. Книги новые.');
 connected('Мини-рассказ',['in','classroomG','fiveF','studentsFplG','theStudentsFpl','hardworkingFpl','theBooksPl','on','deskG','theWindow','openF'],'В классе пять студенток. Студентки прилежные. Книги на столе. Окно открыто.');
+
+// Sentence boundaries are authored, never guessed from Arabic punctuation or word order.
+for(const example of connectedExamples){
+ if(example.ids.length<=10)continue;
+ const first=words[example.ids[0]].key;
+ const lengths=first==='in'?[4,2,3,2]:words[example.ids[1]].key==='doctorsPl'?[2,4,4,2]:[2,2,4,4];
+ const lines=example.ru.match(/[^.!?]+[.!?]/g)?.map(s=>s.trim())??[];
+ if(lengths.reduce((a,b)=>a+b,0)!==example.ids.length||lines.length!==lengths.length)throw Error('Story segment mismatch');
+ let offset=0;example.parts=lengths.map((n,i)=>{const ids=example.ids.slice(offset,offset+n);offset+=n;return {ids,ru:lines[i]}});
+}

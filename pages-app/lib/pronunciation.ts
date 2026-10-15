@@ -11,10 +11,10 @@ export function usePronunciation(sound:boolean,choice='auto'){
  const [voices,V]=useState<SpeechSynthesisVoice[]>([]),[message,M]=useState('');
  useEffect(()=>{if(!('speechSynthesis' in window))return;const synth=window.speechSynthesis;const update=()=>V(arabicVoices());update();synth.addEventListener('voiceschanged',update);return()=>{synth.removeEventListener('voiceschanged',update);synth.cancel()}},[]);
  useEffect(()=>{if(!sound&&'speechSynthesis' in window)window.speechSynthesis.cancel()},[sound]);
- function speak(text:string){M('');if(!sound)return;if(!('speechSynthesis' in window)){M('В этом браузере озвучка недоступна.');return}
+ function speak(text:string,slow=false){M('');if(!sound)return;if(!('speechSynthesis' in window)){M('В этом браузере озвучка недоступна.');return}
  const voice=selectVoice(arabicVoices(),choice);if(!voice){M('На устройстве нет арабского голоса. Добавьте его в настройках озвучивания устройства.');return}
  // Use Arabic text with its vowel marks, never a transliteration or translation.
- const u=new SpeechSynthesisUtterance(text.normalize('NFC'));u.voice=voice;u.lang=voice.lang;u.rate=.85;u.pitch=1;u.volume=1;
+ const u=new SpeechSynthesisUtterance(text.normalize('NFC'));u.voice=voice;u.lang=voice.lang;u.rate=slow?.65:.85;u.pitch=1;u.volume=1;
  u.onerror=e=>{if(e.error!=='canceled'&&e.error!=='interrupted')M('Не удалось озвучить. Нажмите на слово ещё раз.')};window.speechSynthesis.cancel();window.speechSynthesis.speak(u);
  }
  return {available:voices.length>0,voices,message,speak};

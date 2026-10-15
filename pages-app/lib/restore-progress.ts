@@ -4,5 +4,5 @@ export function restoreThroughLesson(progress:Progress,count:number):Progress{
  if(count<=progress.completed.length)return progress;
  const completed=Array.from({length:count},(_,i)=>i),reviews={...progress.reviews};
  for(const w of words)if(w.lesson<count&&!reviews[w.id])reviews[w.id]={level:0,due:0,seen:0};
- return {...progress,completed,reviews,lesson:Math.min(count,lessons.length-1),step:0};
+ return {...progress,attempt:undefined,attempts:undefined,sentenceSession:undefined,completed,reviews,lesson:Math.min(count,lessons.length-1),step:0};
 }
