@@ -1,4 +1,4 @@
-const CACHE='arabikos-app-d2e4a64942cf';const FILES=["./","./index.html","./favicon.svg","./apple-touch-icon.png","./manifest.webmanifest","./assets/index-DmNfUX_-.js","./assets/index-poLN5Qzx.css"];
+const CACHE='arabikos-app-7debb3a70317';const FILES=["./","./index.html","./favicon.svg","./apple-touch-icon.png","./manifest.webmanifest","./assets/index-B3XthKh7.js","./assets/index-C9dqjTez.css"];
 self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);await cache.addAll(FILES);if(!self.registration.active)await self.skipWaiting();})()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if((key.startsWith('arabikos-app-')||key==='arabikos-v1')&&key!==CACHE)await caches.delete(key);await self.clients.claim();})()));
 self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')event.waitUntil(self.skipWaiting());});

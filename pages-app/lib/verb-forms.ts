@@ -12,6 +12,16 @@ const forms:Record<string,VerbForm[]>={
  {ar:'نَذْهَبُ',ru:'Мы идём',tense:'Настоящее · мы'},
  {ar:'سَأَذْهَبُ',ru:'Я пойду',tense:'Будущее · я'},
  {ar:'سَيَذْهَبُ',ru:'Он пойдёт',tense:'Будущее · он'}],
+ said:[
+ {ar:'قَالَ',ru:'Он сказал',tense:'Прошедшее · он'},
+ {ar:'قُلْتُ',ru:'Я сказал / сказала',tense:'Прошедшее · я'},
+ {ar:'قَالَتْ',ru:'Она сказала',tense:'Прошедшее · она'},
+ {ar:'أَقُولُ',ru:'Я говорю',tense:'Настоящее · я'},
+ {ar:'يَقُولُ',ru:'Он говорит',tense:'Настоящее · он'},
+ {ar:'تَقُولُ',ru:'Она говорит',tense:'Настоящее · она'},
+ {ar:'نَقُولُ',ru:'Мы говорим',tense:'Настоящее · мы'},
+ {ar:'سَأَقُولُ',ru:'Я скажу',tense:'Будущее · я'},
+ {ar:'سَيَقُولُ',ru:'Он скажет',tense:'Будущее · он'}],
  out:[
  {ar:'خَرَجَ',ru:'Он вышел',tense:'Прошедшее · он'},
  {ar:'خَرَجْتُ',ru:'Я вышел / вышла',tense:'Прошедшее · я'},
@@ -23,6 +33,6 @@ const forms:Record<string,VerbForm[]>={
  {ar:'سَأَخْرُجُ',ru:'Я выйду',tense:'Будущее · я'},
  {ar:'سَيَخْرُجُ',ru:'Он выйдет',tense:'Будущее · он'}]
 };
-const roots:Record<string,string>={go:'go',wentF:'go',wentMpl:'go',wentFpl:'go',out:'out',outF:'out',outMpl:'out',outFpl:'out'};
+const roots:Record<string,string>={said:'said',go:'go',wentF:'go',wentMpl:'go',wentFpl:'go',out:'out',outF:'out',outMpl:'out',outFpl:'out'};
 export function formsFor(id:number):VerbForm[]{return forms[roots[words[id]?.key]]??[]}
 export const practicedVerbs=(progress:Progress|number[])=>words.filter(w=>w.kind==='verb'&&formsFor(w.id).length&&(Array.isArray(progress)?progress.includes(w.lesson):isWordLearned(progress,w.id))).filter((w,i,all)=>all.findIndex(v=>roots[v.key]===roots[w.key])===i);

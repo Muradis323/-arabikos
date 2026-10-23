@@ -1,7 +1,7 @@
 import {awardFreeze,reconcileStreak,dayKey} from './streak';
-import {lessons,words,type Progress} from './course';
+import {lessons,words,canOpenLesson,type Progress} from './course';
 export function finishLesson(p:Progress,id:number,score:number,now=new Date()):Progress{
- if(!Number.isInteger(id)||id<0||id>=lessons.length||id>p.completed.length||!Number.isInteger(score)||score<0||score>100)throw Error('Некорректный результат урока');
+ if(!canOpenLesson(p,id)||!Number.isInteger(score)||score<0||score>100)throw Error('Некорректный результат урока');
  p=reconcileStreak(p,now);
  const replay=p.completed.includes(id),completed=replay?[...p.completed]:[...p.completed,id],reviews={...p.reviews};
  if(!replay)for(const w of words.filter(w=>w.lesson===id))if(!reviews[w.id])reviews[w.id]={level:0,due:now.getTime(),seen:0};
