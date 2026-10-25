@@ -5,4 +5,4 @@ export function scheduleReview(old:{level:number;seen:number;misses?:number;spel
 }
 
 // Reinsert a forgotten card after three others; never grow the queue with duplicates.
-export function reviewQueueAfter(queue:number[],known:boolean){const [id,...rest]=queue;if(known||id===undefined)return rest;const clean=rest.filter(v=>v!==id);clean.splice(Math.min(3,clean.length),0,id);return clean}
+export function reviewQueueAfter<T>(queue:T[],known:boolean){const [id,...rest]=queue;if(known||id===undefined)return rest;const clean=rest.filter(v=>v!==id);clean.splice(Math.min(3,clean.length),0,id);return clean}

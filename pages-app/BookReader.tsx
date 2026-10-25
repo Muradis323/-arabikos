@@ -4,8 +4,8 @@ import {readingPages,pageTurn,swipePageDelta} from './lib/reading-pages';
 import {adhkarBook} from './lib/adhkar-book';
 import {type ReadingProgress} from './lib/course';
 export type BookToken={ar:string;ru?:string};
-export const readingWordKey=(ar:string)=>ar.normalize('NFKC').replace(/ٱ/g,'ا').replace(/[\u0640\u064b-\u065f\u0670]/g,'').replace(/[^\u0621-\u063a\u0641-\u064a]/g,'');
-export function dictionaryReadingKey(ar:string){const key=readingWordKey(ar);return key.startsWith('ال')&&key!=='الله'?key.slice(2):key}
+export {readingWordKey,dictionaryReadingKey} from './lib/word-key';
+import {readingWordKey,dictionaryReadingKey} from './lib/word-key';
 export function existingReadingWord(reading:ReadingProgress,ar:string){const key=dictionaryReadingKey(ar);return Object.entries(reading.cards).find(([,card])=>dictionaryReadingKey(card.ar)===key)?.[0]}
 export function addReadingWord(reading:ReadingProgress,word:BookToken):ReadingProgress{
  if(!word.ru||!readingWordKey(word.ar)||existingReadingWord(reading,word.ar))return reading;

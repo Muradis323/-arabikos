@@ -1,5 +1,5 @@
 import {type Word} from './lib/course';
-export function ReviewCard({word,reverse,flip,disabled,onFlip}:{word:Word;reverse:boolean;flip:boolean;disabled:boolean;onFlip:()=>void}){
+export function ReviewCard({word,reverse,flip,disabled,onFlip}:{word:Pick<Word,'ar'|'ru'>;reverse:boolean;flip:boolean;disabled:boolean;onFlip:()=>void}){
  const showArabic=reverse?flip:!flip;
  return <button className={'flashcard '+(flip?'flipped':'')} onClick={()=>{if(!disabled)onFlip()}} aria-label="Показать другую сторону карточки">
  {!flip&&<span className="eyebrow">{reverse?'ВСПОМНИТЕ АРАБСКОЕ СЛОВО':'ВСПОМНИТЕ ПЕРЕВОД'}</span>}
