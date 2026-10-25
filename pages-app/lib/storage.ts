@@ -5,6 +5,7 @@ export const LEGACY_KEY='arabikos-progress-v2';
 export const KEY='arabikos-madinah-v1';
 export function validateProgress(p:Progress):boolean {
  if(!p||!Array.isArray(p.completed)||!Number.isInteger(p.lesson)||!Number.isInteger(p.step)||!p.reviews||!p.days)return false;
+ if(p?.dailyPoints!==undefined&&(!p.dailyPoints||typeof p.dailyPoints!=='object'||Array.isArray(p.dailyPoints)||Object.entries(p.dailyPoints).some(([date,points])=>!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isSafeInteger(points)||points<0)))return false;
  if(p?.book1Exam!==undefined){const e=p.book1Exam;if(!e||!Number.isInteger(e.best)||e.best<0||e.best>100||!Number.isInteger(e.last)||e.last<0||e.last>e.best||!Number.isSafeInteger(e.runs)||e.runs<1||typeof e.passed!=='boolean'||e.passed!==(e.best>=80)||p.completed?.length<BOOK1_COUNT)return false;}
  if(p?.book1ExamAttempt!==undefined&&(!Array.isArray(p.book1ExamAttempt)||p.book1ExamAttempt.length>=24||p.completed?.length<BOOK1_COUNT||p.book1ExamAttempt.some(n=>!Number.isInteger(n)||n<0||n>3)))return false;
  if(p?.completed?.length>BOOK1_COUNT&&!p.book1Exam?.passed)return false;
