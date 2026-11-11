@@ -3,14 +3,10 @@ import {Flag,ChevronLeft,ChevronRight} from 'lucide-react';
 import {readingPages,pageTurn,swipePageDelta} from './lib/reading-pages';
 import {adhkarBook} from './lib/adhkar-book';
 import {type ReadingProgress} from './lib/course';
-export type BookToken={ar:string;ru?:string};
 export {readingWordKey,dictionaryReadingKey} from './lib/word-key';
-import {readingWordKey,dictionaryReadingKey} from './lib/word-key';
-export function existingReadingWord(reading:ReadingProgress,ar:string){const key=dictionaryReadingKey(ar);return Object.entries(reading.cards).find(([,card])=>dictionaryReadingKey(card.ar)===key)?.[0]}
-export function addReadingWord(reading:ReadingProgress,word:BookToken):ReadingProgress{
- if(!word.ru||!readingWordKey(word.ar)||existingReadingWord(reading,word.ar))return reading;
- return {...reading,cards:{...reading.cards,[word.ar]:{ar:word.ar,ru:word.ru,level:0,due:0,seen:0}}};
-}
+export {addReadingWord,existingReadingWord,type BookToken} from './lib/reading-words';
+import {addReadingWord,existingReadingWord,type BookToken} from './lib/reading-words';
+import {dictionaryReadingKey} from './lib/word-key';
 const empty:ReadingProgress={paragraph:0,font:34,cards:{}};
 export function BookReader({reading=empty,onChange,knownWords=[]}:{reading?:ReadingProgress;knownWords?:readonly {ar:string}[];onChange?:(reading:ReadingProgress)=>void}){
  const [page,Page]=useState(()=>pageTurn(0,reading.bookmarks?.[adhkarBook.id]??(reading.storyId===adhkarBook.id?reading.paragraph:0),readingPages.length));
