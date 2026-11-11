@@ -5,8 +5,7 @@ import {awardPoints} from './lib/daily-points';
 import {dictionaryReadingKey} from './lib/word-key';
 import {BookExam} from './BookExam';
 import {completeBook1Exam} from './lib/book-exam';
-import {ListeningPractice} from './ListeningPractice';
-import {StoryLibrary} from './StoryLibrary';
+import {NawawiReader} from './NawawiReader';
 import {TeacherMascot} from './TeacherMascot';
 import {dayKey,reconcileStreak} from './lib/streak';
 import {hapticsEnabled,saveHaptics,tactile} from './lib/haptics';
@@ -57,7 +56,7 @@ export default function Page(){
 
  const nextDue=entries.filter(w=>!w.mastered).map(w=>w.review.due).filter(t=>t>now).sort((a,b)=>a-b)[0];
 
- return <div className={'app '+(['home','lessons'].includes(view)?'lesson-home':'')}><aside className="sidebar"><a className="brand" href="#" onClick={e=>{e.preventDefault();go('home')}}><img className="brand-logo" src="./favicon.svg" alt=""/><span>Арабикос<small>ЧИТАТЬ. ПОНИМАТЬ.</small></span></a><div className="side-label">ВАША КНИГА</div><nav>{([['home','Уроки',BookOpen],['dictionary','Мой словарь',Library],['practice','Практика',Layers]] as const).map(([key,label,Icon])=><button key={String(key)} className={(view===key||(key==='home'&&['lessons','lesson','complete','exam'].includes(view))||(key==='practice'&&['sentences','stories','listening'].includes(view))||(key==='dictionary'&&['review','wordbuilder'].includes(view)))?'nav active':'nav'} onClick={()=>go(String(key))}><Icon size={20}/><span>{String(label)}</span>{key==='dictionary'&&due.length>0&&<b>{due.length}</b>}</button>)}</nav><div className="side-bottom"><Leaf size={24}/><p>Знание растёт<br/>с каждой страницей.</p><small>Мединский курс · тома 1–2</small></div><span className="edition">АРАБСКИЙ ДЛЯ ПОНИМАНИЯ КОРАНА</span></aside>
+ return <div className={'app '+(['home','lessons'].includes(view)?'lesson-home':'')}><aside className="sidebar"><a className="brand" href="#" onClick={e=>{e.preventDefault();go('home')}}><img className="brand-logo" src="./favicon.svg" alt=""/><span>Арабикос<small>ЧИТАТЬ. ПОНИМАТЬ.</small></span></a><div className="side-label">ВАША КНИГА</div><nav>{([['home','Уроки',BookOpen],['dictionary','Мой словарь',Library],['practice','Практика',Layers]] as const).map(([key,label,Icon])=><button key={String(key)} className={(view===key||(key==='home'&&['lessons','lesson','complete','exam'].includes(view))||(key==='practice'&&['sentences','nawawi'].includes(view))||(key==='dictionary'&&['review','wordbuilder'].includes(view)))?'nav active':'nav'} onClick={()=>go(String(key))}><Icon size={20}/><span>{String(label)}</span>{key==='dictionary'&&due.length>0&&<b>{due.length}</b>}</button>)}</nav><div className="side-bottom"><Leaf size={24}/><p>Знание растёт<br/>с каждой страницей.</p><small>Мединский курс · тома 1–2</small></div><span className="edition">АРАБСКИЙ ДЛЯ ПОНИМАНИЯ КОРАНА</span></aside>
  <div className="workspace"><header><DailyPointsBar progress={p} now={now}/><div><button className="sound-toggle" aria-label={sound?'Отключить звук':'Включить звук'} aria-pressed={sound} title={sound?'Отключить звук':'Включить звук'} onClick={()=>setSound(!sound)}>{sound?<Volume2 size={19}/>:<VolumeX size={19}/>}</button><button className="sound-toggle" aria-label="Настройки" title="Настройки" onClick={()=>go('settings')}><Settings size={20}/></button></div></header><main>
  {audio.message&&<p role="status">{audio.message}</p>}
  {error&&<div className="error" role="alert">{error} {!ready?<button onClick={load}>Повторить</button>:<button onClick={()=>save(p)}>Повторить сохранение</button>}</div>}
@@ -72,9 +71,8 @@ export default function Page(){
  {view==='wordbuilder'&&<WordBuilder ids={weak.map(w=>w.id)} sound={sound} onSuccess={(id,withoutHint)=>save(awardPoints(activity(clearDifficultWord(progressRef.current,id,withoutHint)),1))} back={()=>go('dictionary')}/>}
  {view==='settings'&&<><SettingsPage progress={p} sound={sound} haptics={haptics} setHaptics={setHaptics} dark={dark} palette={palette} setSound={setSound} setDark={setTheme} setPalette={next=>{Palette(next);document.documentElement.dataset.palette=next;try{localStorage.setItem('arabikos-palette',next)}catch{}}} onImport={data=>{const imported=reconcileStreak(data);writeProgress(localStorage,imported);cancelReveal();P(imported);Unsaved(false);E('');Q([]);}}/></>}
  {view==='practice'&&<PracticeHub completed={p.completed} progress={p} open={go}/>}
- {view==='sentences'&&<><button className="textbtn practice-back" onClick={()=>go('practice')}>← Все тесты</button><SentencePractice saved={p.sentenceSession} onSave={sentenceSession=>save({...progressRef.current,sentenceSession})} key={p.completed.join(',')} completed={p.completed} sound={sound} onSuccess={()=>save(awardPoints(activity(progressRef.current),3))}/></>}
- {view==='stories'&&<><button className="textbtn practice-back" onClick={()=>go('practice')}>← Практика</button><StoryLibrary reading={p.reading} knownWords={learned} onChange={reading=>save({...progressRef.current,reading})}/></>}
- {view==='listening'&&<><button className="textbtn" onClick={()=>go('practice')}>← Практика</button><ListeningPractice progress={p} sound={sound} enableSound={()=>setSound(true)} onResult={(id,ok)=>{const n=progressRef.current;save({...awardPoints(ok?activity(n):n,ok?1:0),wordErrors:{...n.wordErrors,[id]:ok?Math.max(0,(n.wordErrors?.[id]??0)-1):(n.wordErrors?.[id]??0)+1}})}}/></>}
+ {view==='sentences'&&<><button className="textbtn practice-back" onClick={()=>go('practice')}>← На книжную полку</button><SentencePractice saved={p.sentenceSession} onSave={sentenceSession=>save({...progressRef.current,sentenceSession})} key={p.completed.join(',')} completed={p.completed} sound={sound} onSuccess={()=>save(awardPoints(activity(progressRef.current),3))}/></>}
+ {view==='nawawi'&&<NawawiReader reading={p.reading} knownWords={learned} onChange={reading=>save({...progressRef.current,reading})} onBack={()=>go('practice')}/>}
 
  </>}
  <footer><span>АРАБИКОС</span><span>Прогресс хранится только в этом браузере. Очистка данных удалит его.</span><span>✦</span></footer></main></div></div>
