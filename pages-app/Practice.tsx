@@ -1,4 +1,4 @@
-import {ArrowUpRight,BookOpen,Sparkles} from 'lucide-react';
+import {BookOpen} from 'lucide-react';
 import {TeacherMascot} from './TeacherMascot';
 import './bookshelf.css';
 import {tactile} from './lib/haptics';
@@ -28,8 +28,6 @@ function SentenceRound({example,count,sound,onSuccess,next}:{example:typeof less
  return <section className="study-card"><span className="eyebrow">ПРЕДЛОЖЕНИЕ {count+1}</span><h2 className="practice-prompt" style={{whiteSpace:"pre-line"}}>{example.ru}</h2><div className="sentence-builder" dir="rtl" lang="ar" aria-label="Ваше предложение">{selected.map((token,i)=><button className="word-token" key={token} disabled={busy.current} onClick={()=>{S(s=>s.filter((_,j)=>j!==i));F('')}}>{words[example.ids[token]].ar}</button>)}{!selected.length&&<span className="muted" lang="ru">Выберите слова ниже</span>}</div><div className="word-bank" dir="rtl" lang="ar">{bank.map(token=><button className="word-token" disabled={selected.includes(token)||busy.current} key={token} onClick={()=>choose(token)}>{words[example.ids[token]].ar}</button>)}</div><p role="status">{feedback||'Проверка происходит автоматически.'}</p><button className="textbtn center" disabled={busy.current} onClick={()=>{S([]);F('')}}>Собрать заново</button></section>;
 }
 export function PracticeHub({completed,open,progress}:{completed:number[];open:(view:string)=>void;progress?:Progress}){
- const bookmark=progress?.reading?.bookmarks?.['nawawi-forty-v1']??0;
- const count=new Set(completed).size*5;
  return <section className="practice-library" aria-labelledby="library-title">
   <div className="library-heading"><div><span className="eyebrow">ЛИЧНАЯ БИБЛИОТЕКА</span><h1 id="library-title">Практика</h1><p>Знания оживают на страницах.</p></div><span className="library-calligraphy" lang="ar" dir="rtl" aria-hidden="true">اقْرَأْ</span></div>
   <div className="library-shelf-heading"><span><BookOpen size={16}/> На вашей полке</span><span>02 книги</span></div>
@@ -37,17 +35,14 @@ export function PracticeHub({completed,open,progress}:{completed:number[];open:(
    <div className="shelf-top-ornament" aria-hidden="true">✧</div>
    <div className="shelf-books">
     <button className="shelf-volume sentence-volume" onClick={()=>open('sentences')} aria-label="Открыть книгу «Предложения»">
-     <span className="shelf-book-object"><span className="shelf-book-pages"/><span className="shelf-cover sentence-cover"><span className="cover-frame"><span className="cover-series">АРАБИКОС · ПРАКТИКУМ</span><span className="cover-flower" aria-hidden="true">✺</span><span className="cover-arabic" lang="ar" dir="rtl">جُمَلٌ</span><strong>Предложения</strong><span className="cover-rule"/><span className="cover-description">От знакомых слов<br/>к живой речи</span><span className="cover-volume">МЕДИНСКИЙ КУРС</span></span></span><span className="shelf-ribbon" aria-hidden="true"/></span>
-     <span className="shelf-book-caption"><span className="shelf-book-kind">ПРАКТИКУМ</span><strong>Предложения <ArrowUpRight size={17}/></strong><span>{count?`${count} заданий из ваших уроков`:'Откроется после первого урока'}</span><span className="shelf-book-action">Собирать фразы <span aria-hidden="true">→</span></span></span>
+     <span className="shelf-book-object"><span className="shelf-book-pages"/><span className="shelf-cover sentence-cover"><span className="cover-frame"><span className="cover-series">АРАБИКОС · ПРАКТИКУМ</span><span className="cover-flower" aria-hidden="true">✺</span><span className="cover-subtitle">АРАБСКИЙ ЯЗЫК</span><strong>Предложения</strong><span className="cover-rule"/><span className="cover-description">От знакомых слов<br/>к живой речи</span><span className="cover-volume">МЕДИНСКИЙ КУРС</span></span></span><span className="shelf-ribbon" aria-hidden="true"/></span>
     </button>
     <button className="shelf-volume nawawi-volume" onClick={()=>open('nawawi')} aria-label="Открыть книгу «40 хадисов ан-Навави», первые 5 хадисов">
-     <span className="shelf-book-object"><span className="shelf-book-pages"/><span className="shelf-cover nawawi-cover"><img src={new URL('./assets/nawawi-alminhaj-cover.png',import.meta.url).href} alt="Обложка «الأربعون النووية», издательство Дар аль-Минхадж" width="350" height="500"/><span className="cover-image-gloss"/></span><span className="shelf-ribbon" aria-hidden="true"/></span>
-     <span className="shelf-book-caption"><span className="shelf-book-kind">ЧТЕНИЕ · ХАДИСЫ 1–5</span><strong>40 хадисов ан-Навави <ArrowUpRight size={17}/></strong><span>Перевод каждого слова по касанию</span><span className="shelf-book-action">{bookmark>0?'Продолжить чтение':'Открыть книгу'} <span aria-hidden="true">→</span></span></span>
+     <span className="shelf-book-object"><span className="shelf-book-pages"/><span className="shelf-cover nawawi-cover"><img src={new URL('./assets/nawawi-russian-cover.jpg',import.meta.url).href} alt="Русская обложка книги «40 хадисов имама ан-Навави»" width="240" height="320"/><span className="cover-image-gloss"/></span><span className="shelf-ribbon" aria-hidden="true"/></span>
     </button>
    </div>
    <div className="shelf-plank" aria-hidden="true"><span>مَكْتَبَتِي</span></div>
   </div>
-  <div className="library-bottom"><p><Sparkles size={15}/> Одна страница сегодня — ещё один шаг к пониманию.</p><a href="https://alminhaj.com/ar/OVWEed" target="_blank" rel="noreferrer">Обложка: Дар аль-Минхадж ↗</a></div>
   <div className="library-guide"><TeacherMascot compact emotion="encouraging" message="Выбирай книгу. В хадисах коснись любого слова — я помогу с переводом."/></div>
  </section>;
 }

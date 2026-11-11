@@ -9,6 +9,7 @@ const url=process.env.ARABIKOS_TEST_URL||'http://127.0.0.1:4173/';
    const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.goto(url);await page.getByRole('button',{name:'Практика',exact:true}).click();
    assert.equal(await page.locator('.shelf-volume').count(),2);
+   assert.equal(await page.locator('.shelf-book-caption').count(),0);
    assert(await page.locator('.nawawi-cover img').evaluate(i=>i.complete&&i.naturalWidth>0));
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
    await page.getByRole('button',{name:/40 хадисов/}).click();
