@@ -43,6 +43,6 @@ export function PracticeHub({completed,open,progress}:{completed:number[];open:(
    </div>
    <div className="shelf-plank" aria-hidden="true"><span>مَكْتَبَتِي</span></div>
   </div>
-  <div className="library-guide"><TeacherMascot compact emotion="encouraging" message="Выбирай книгу. В хадисах удерживай слово полторы секунды — я помогу с переводом."/></div>
+  <div className="library-guide"><TeacherMascot compact emotion="encouraging" message="Выбирай книгу. В хадисах удерживай слово полсекунды — я помогу с переводом."/></div>
  </section>;
 }
