@@ -8,7 +8,7 @@ import {dictionaryReadingKey} from './lib/word-key';
 import './nawawi-reader.css';
 const empty:ReadingProgress={paragraph:0,font:34,cards:{}};
 type Selection={word:BookToken;id:string};
-export const WORD_HOLD_MS=1500;
+export const WORD_HOLD_MS=500;
 type WordGesture={x:number;y:number;node:HTMLButtonElement|null;id:number;moved:boolean;translated:boolean};
 export function NawawiReader({reading=empty,knownWords=[],onChange,onBack}:{reading?:ReadingProgress;knownWords?:readonly {ar:string}[];onChange:(reading:ReadingProgress)=>void;onBack:()=>void}){
  const [page,Page]=useState(()=>clampBookPage(reading.bookmarks?.[NAWAWI_BOOK_ID]??(reading.storyId===NAWAWI_BOOK_ID?reading.paragraph:0)));
@@ -39,7 +39,7 @@ export function NawawiReader({reading=empty,knownWords=[],onChange,onBack}:{read
   <div className="nawawi-folio"><span aria-hidden="true">✧</span><span>{new Intl.NumberFormat('ar').format(number)}</span><span aria-hidden="true">✧</span></div>
  </article>}
  return <section className="nawawi-reader"><button className="textbtn nawawi-back" onClick={onBack}><Library size={17}/> На книжную полку</button>
- <div className="nawawi-heading"><div><span className="eyebrow">БИБЛИОТЕКА · ЧТЕНИЕ В ПОДЛИННИКЕ</span><h1>40 хадисов ан-Навави</h1><p>Первые пять хадисов. Удерживайте слово 1,5 секунды, чтобы увидеть перевод.</p></div><span className="nawawi-edition"><Bookmark size={15}/> Место сохранено</span></div>
+ <div className="nawawi-heading"><div><span className="eyebrow">БИБЛИОТЕКА · ЧТЕНИЕ В ПОДЛИННИКЕ</span><h1>40 хадисов ан-Навави</h1><p>Первые пять хадисов. Удерживайте слово 0,5 секунды, чтобы увидеть перевод.</p></div><span className="nawawi-edition"><Bookmark size={15}/> Место сохранено</span></div>
  <div className="nawawi-toolbar"><label>Хадис<select aria-label="Выбрать хадис" value={hadith.id} onChange={event=>{const target=nawawiPages.findIndex(p=>p.hadith.id===Number(event.target.value));turn(target>page?1:-1,target)}}>{nawawiHadiths.map(h=><option key={h.id} value={h.id}>{h.id}. {h.title}</option>)}</select></label><div className="nawawi-font"><button aria-label="Уменьшить шрифт" disabled={reading.font<=28} onClick={()=>commit({...latest.current,font:Math.max(28,reading.font-2)})}><Minus size={16}/></button><span aria-hidden="true">Aa</span><button aria-label="Увеличить шрифт" disabled={reading.font>=44} onClick={()=>commit({...latest.current,font:Math.min(44,reading.font+2)})}><Plus size={16}/></button></div></div>
  <p className="nawawi-gesture-hint">Читайте справа налево. Следующая страница — свайп вправо →</p>
  <div className="nawawi-book" ref={surface} tabIndex={0} role="group" aria-label="Открытая книга. Стрелка влево — вперёд, вправо — назад" onKeyDown={event=>{if(event.key==='ArrowLeft'){event.preventDefault();turn(1)}if(event.key==='ArrowRight'){event.preventDefault();turn(-1)}}}
